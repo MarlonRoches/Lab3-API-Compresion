@@ -18,6 +18,7 @@ namespace API.Data
             }
         }
         Dictionary<string, NodoHuffman> Diccionario = new Dictionary<string, NodoHuffman>();
+
         public void Comprimir(string root)
         {
             var reader = new StreamReader(root);
@@ -27,13 +28,28 @@ namespace API.Data
                 if (Diccionario.ContainsKey(item.ToString()))
                 {
                     // lo contiene
+                    Diccionario[item.ToString()].Frecuencia++;
                 }
                 else
                 {
                     //nuevo
-                    Diccionario.Add(item.ToString(),new NodoHuffman());
+                    Diccionario.Add(item.ToString(),new NodoHuffman(item));
                 }
             }
+            foreach (var item in Diccionario)
+            {
+                item.Value.Frecuencia = item.Value.Frecuencia / texto.Length;
+            }
+            var Sorting = Diccionario.ToList();
+            Sorting.Sort((x, y) => x.Value.Frecuencia.CompareTo(y.Value.Frecuencia));
+            Diccionario = new Dictionary<string, NodoHuffman>();
+            foreach (var item in Sorting)
+            {
+                Diccionario.Add(item.Key,item.Value);
+
+            }
+
+            //C:\Users\roche\Desktop\Tony\Lab1Compresion_\Compresion\BIBLIA COMPLETA.txt
         }
 
     }

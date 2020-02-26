@@ -7,11 +7,11 @@ namespace API.Models
 {
     public class NodoHuffman
     {
-        NodoHuffman Padre    { get; set; }
-        NodoHuffman Derecho  {get;set;}
-        NodoHuffman Izquierdo{get;set;}
-        char Caracter        {get;set;}
-        double Frecuencia    {get;set;}
+       public NodoHuffman Padre    { get; set; }
+       public NodoHuffman Derecho  {get;set;}
+       public NodoHuffman Izquierdo{get;set;}
+       public char Caracter        {get;set;}
+       public double Frecuencia    {get;set;}
         public NodoHuffman(char _caracter)
         {
             Frecuencia = 1;
