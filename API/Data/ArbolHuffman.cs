@@ -30,6 +30,7 @@ namespace API.Data
         string GlobalPath = null;
         string rutaAGuardar;
         public bool escrito;
+        Dictionary<byte, string> dicRecorridos = new Dictionary<byte, string>();
         #endregion
         //C:\Users\roche\Desktop\Tony\Lab1Compresion_\Compresion\BIBLIA COMPLETA.txt
         public void LeerYLLenarArbol(string _root)
@@ -86,19 +87,17 @@ namespace API.Data
             {
                 var nuevo = new NodoHuffman();
                 //Llenar Nodo
-                nuevo.Nombre = item.Key.ToString();
+                nuevo.Nombre = (byte)item.Key;
                 nuevo.Probabilidad = item.Value;
                 Arbol.Add(nuevo);
             }
             Arbol = Arbol.OrderBy(x => x.Probabilidad).ToList();
-
             if (asignado == false)
             {
                 DiccionarioPrefijos = Arbol.OrderBy(x => x.Probabilidad).ToList();
                 asignado = true;
             }
-
-
+            
             var n = 1;
             while (Arbol.Count != 1)
             {
@@ -122,7 +121,7 @@ namespace API.Data
                     NuevoPadre.Derecha.SoyIzquierda = false;
                 }
                 NuevoPadre.Probabilidad = NuevoPadre.Derecha.Probabilidad + NuevoPadre.Izquierda.Probabilidad;
-                NuevoPadre.Nombre = $"C{n}";
+                
 
                 #endregion
                 Arbol.RemoveAt(0);
@@ -130,10 +129,36 @@ namespace API.Data
                 Arbol.Add(NuevoPadre);
                 n++;
                 Arbol = Arbol.OrderBy(x => x.Probabilidad).ToList();
-
                 //PostOrden(NuevoPadre);
                 //Limpiar(NuevoPadre);
                 //ObtencioCodigosPrefijo(Arbol[0]);
+            }
+                ArmarDiccionarioDeRecorrido(Arbol[0],"");
+            var moni = string.Empty;    
+            foreach (var item in dicRecorridos.Values)
+            {
+                moni += $"{item},";
+            }
+        }
+
+        private void ArmarDiccionarioDeRecorrido(NodoHuffman temp, string recorrido)
+        {
+            if (temp.Derecha == null && temp.Izquierda == null)
+            {
+                dicRecorridos.Add(temp.Nombre, recorrido);
+            }
+            else
+            {
+                if (temp.Derecha != null)
+                {
+                    ArmarDiccionarioDeRecorrido(temp.Derecha, recorrido + 1);
+
+                }
+                if (temp.Izquierda != null)
+                {
+                    ArmarDiccionarioDeRecorrido(temp.Izquierda, recorrido + 0);
+                }
+
             }
         }
     }

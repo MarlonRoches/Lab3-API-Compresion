@@ -9,7 +9,7 @@ namespace API.Models
     {
         public bool esHoja { get; set; }
         public string Prefijo { get; set; }
-        public string Nombre { get; set; }
+        public byte Nombre { get; set; }
         public decimal Probabilidad { get; set; }
         public bool SoyDerecha;
         public bool SoyIzquierda;
