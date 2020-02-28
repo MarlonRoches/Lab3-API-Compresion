@@ -178,19 +178,23 @@ namespace API.Data
             var path = Path.GetDirectoryName(GlobalPath);
             var Name = Path.GetFileNameWithoutExtension(GlobalPath);
             var Compressed = new FileStream($"{path}\\Compressed_{Name}.huff", FileMode.Append);
-
+            var writer = new BinaryWriter(Compressed);
             var DeCompressed = new FileStream(GlobalPath, FileMode.OpenOrCreate);
             var Lector = new BinaryReader(DeCompressed);
             var byteBuffer = new byte[bufferLength];//buffer
-
+            var x = string.Empty;
             while (Lector.BaseStream.Position != Lector.BaseStream.Length)
             {
                 byteBuffer = Lector.ReadBytes(bufferLength);
                 foreach (var Caracter in byteBuffer)
                 {
-                    var x = string.Empty;
-
-                   
+                    x += DicPrefijos[Caracter];
+                    if (x.Length >=8)
+                    {
+                        var bytewrt = StrToBy(x.Substring(0,8));
+                        x = x.Remove(0, 8);
+                        writer.Write(bytewrt);
+                    }
                 } 
 
             }
