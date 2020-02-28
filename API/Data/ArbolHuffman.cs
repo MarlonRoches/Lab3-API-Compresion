@@ -26,13 +26,15 @@ namespace API.Data
         public Dictionary<char, decimal> Letras = new Dictionary<char, decimal>();
         public List<NodoHuffman> DiccionarioPrefijos = new List<NodoHuffman>();
         int cantidad_de_letras = 0;
+        int max = 0;
         Dictionary<char, string> IndexID = new Dictionary<char, string>();
         string GlobalPath = null;
         string rutaAGuardar;
         public bool escrito;
-        Dictionary<byte, string> dicRecorridos = new Dictionary<byte, string>();
+        Dictionary<byte, string> DicPrefijos = new Dictionary<byte, string>();
         #endregion
-        //C:\Users\roche\Desktop\Tony\Lab1Compresion_\Compresion\BIBLIA COMPLETA.txt
+
+        //C:\Users\roche\Desktop\BIBLIA COMPLETA.txt
         public void LeerYLLenarArbol(string _root)
         {
             GlobalPath = _root;
@@ -75,9 +77,10 @@ namespace API.Data
                 num++;
             } //llenar auxiliar
             Letras = DiccionarioAuxiliar;
-            InsertarEnLaLista();
-
             file.Close();//cerramos coneccion con archivo
+            InsertarEnLaLista();
+            EscribirDiccionario();
+            PrefijoMasGrande();
         }
         public void InsertarEnLaLista()
         {
@@ -129,36 +132,55 @@ namespace API.Data
                 Arbol.Add(NuevoPadre);
                 n++;
                 Arbol = Arbol.OrderBy(x => x.Probabilidad).ToList();
-                //PostOrden(NuevoPadre);
-                //Limpiar(NuevoPadre);
-                //ObtencioCodigosPrefijo(Arbol[0]);
             }
-                ArmarDiccionarioDeRecorrido(Arbol[0],"");
-            var moni = string.Empty;    
-            foreach (var item in dicRecorridos.Values)
-            {
-                moni += $"{item},";
-            }
+                Prefijos(Arbol[0],"");
+            
         }
-
-        private void ArmarDiccionarioDeRecorrido(NodoHuffman temp, string recorrido)
+        public void Prefijos(NodoHuffman _Actual, string prefijo)
         {
-            if (temp.Derecha == null && temp.Izquierda == null)
+            if (_Actual.Derecha == null && _Actual.Izquierda == null)
             {
-                dicRecorridos.Add(temp.Nombre, recorrido);
+                DicPrefijos.Add(_Actual.Nombre, prefijo);
             }
             else
             {
-                if (temp.Derecha != null)
+                if (_Actual.Derecha != null)
                 {
-                    ArmarDiccionarioDeRecorrido(temp.Derecha, recorrido + 1);
+                    Prefijos(_Actual.Derecha, prefijo + 1);
 
                 }
-                if (temp.Izquierda != null)
+                if (_Actual.Izquierda != null)
                 {
-                    ArmarDiccionarioDeRecorrido(temp.Izquierda, recorrido + 0);
+                    Prefijos(_Actual.Izquierda, prefijo + 0);
                 }
 
+            }
+        }
+        public void EscribirDiccionario()
+        {
+            var path = Path.GetDirectoryName(GlobalPath);
+            var Name = Path.GetFileNameWithoutExtension(GlobalPath);
+            var file = new FileStream($"{path}\\Compressed_{Name}.huff",FileMode.OpenOrCreate);
+            var writer = new StreamWriter(file);
+            foreach (var item in DicPrefijos)
+            {
+                writer.WriteLine($"{(char)item.Key}|{item.Value}");
+            }
+            writer.Close();
+            file.Close();
+        }
+        public void ComprimirTexto()
+        {
+
+        }
+        public void PrefijoMasGrande()
+        {
+            foreach (var item in DicPrefijos)
+            {
+                if (item.Value.Length > max)
+                {
+                    max = item.Value.Length;
+                }
             }
         }
     }
