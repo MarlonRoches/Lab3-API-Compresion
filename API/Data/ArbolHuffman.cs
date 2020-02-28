@@ -86,7 +86,7 @@ namespace API.Data
             {
                 var nuevo = new NodoHuffman();
                 //Llenar Nodo
-                nuevo.Nombre = item.Key;
+                nuevo.Nombre = item.Key.ToString();
                 nuevo.Probabilidad = item.Value;
                 Arbol.Add(nuevo);
             }
@@ -122,7 +122,7 @@ namespace API.Data
                     NuevoPadre.Derecha.SoyIzquierda = false;
                 }
                 NuevoPadre.Probabilidad = NuevoPadre.Derecha.Probabilidad + NuevoPadre.Izquierda.Probabilidad;
-                NuevoPadre.Nombre = 'C';
+                NuevoPadre.Nombre = $"C{n}";
 
                 #endregion
                 Arbol.RemoveAt(0);
