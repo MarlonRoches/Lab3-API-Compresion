@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.IO;
 using API.Models;
 using System.Web;
+using System.Text;
 
 namespace API.Data
 {
@@ -35,7 +36,7 @@ namespace API.Data
         #endregion
 
         //C:\Users\roche\Desktop\BIBLIA COMPLETA.txt
-        public void LeerYLLenarArbol(string _root)
+        public void MainCompresionHuffman(string _root)
         {
             GlobalPath = _root;
             var file = new FileStream(GlobalPath, FileMode.OpenOrCreate);
@@ -81,7 +82,9 @@ namespace API.Data
             InsertarEnLaLista();
             EscribirDiccionario();
             PrefijoMasGrande();
+            ComprimirTexto();
         }
+
         public void InsertarEnLaLista()
         {
             var asignado = false;
@@ -171,7 +174,28 @@ namespace API.Data
         }
         public void ComprimirTexto()
         {
+            var textocomprimido = string.Empty;
+            var path = Path.GetDirectoryName(GlobalPath);
+            var Name = Path.GetFileNameWithoutExtension(GlobalPath);
+            var Compressed = new FileStream($"{path}\\Compressed_{Name}.huff", FileMode.Append);
 
+            var DeCompressed = new FileStream(GlobalPath, FileMode.OpenOrCreate);
+            var Lector = new BinaryReader(DeCompressed);
+            var byteBuffer = new byte[bufferLength];//buffer
+
+            while (Lector.BaseStream.Position != Lector.BaseStream.Length)
+            {
+                byteBuffer = Lector.ReadBytes(bufferLength);
+                foreach (var Caracter in byteBuffer)
+                {
+                    var x = string.Empty;
+
+                   
+                } 
+
+            }
+
+            Compressed.Close();
         }
         public void PrefijoMasGrande()
         {
@@ -182,6 +206,23 @@ namespace API.Data
                     max = item.Value.Length;
                 }
             }
+        }
+        byte StrToBy(string bufer) //String binario a byte
+        {
+
+            int num, binVal, decVal = 0, baseVal = 1, rem;
+            num = int.Parse(bufer);
+            binVal = num;
+
+            while (num > 0)
+            {
+                rem = num % 10;
+                decVal = decVal + rem * baseVal;
+                num = num / 10;
+
+                baseVal = baseVal * 2;
+            }
+            return Convert.ToByte(decVal);
         }
     }
 }
