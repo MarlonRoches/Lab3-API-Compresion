@@ -7,20 +7,27 @@ namespace API.Models
 {
     public class NodoHuffman
     {
-       public NodoHuffman Padre    { get; set; }
-       public NodoHuffman Derecho  {get;set;}
-       public NodoHuffman Izquierdo{get;set;}
-       public char Caracter        {get;set;}
-       public double Frecuencia    {get;set;}
-        public NodoHuffman(char _caracter)
+        public bool esHoja { get; set; }
+        public string Prefijo { get; set; }
+        public char Nombre { get; set; }
+        public decimal Probabilidad { get; set; }
+        public bool SoyDerecha;
+        public bool SoyIzquierda;
+        public NodoHuffman Padre;
+        public NodoHuffman Izquierda;
+        public NodoHuffman Derecha;
+
+        public NodoHuffman()
         {
-            Frecuencia = 1;
-            Caracter = _caracter;
+            esHoja = true;
+            Prefijo = "";
+            Probabilidad = 0;
             Padre = null;
-            Izquierdo = null;
-            Derecho = null;
-
-
+            Izquierda = null;
+            Derecha = null;
+            SoyDerecha = false;
+            SoyIzquierda = false;
         }
+
     }
 }

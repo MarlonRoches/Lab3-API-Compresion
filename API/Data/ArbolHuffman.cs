@@ -17,11 +17,39 @@ namespace API.Data
                 return _instance;
             }
         }
-        Dictionary<string, NodoHuffman> Diccionario = new Dictionary<string, NodoHuffman>();
-
-        public void Comprimir(string root)
+        Dictionary<char, double> Diccionario = new Dictionary<char, double>();
+        Dictionary<string, NodoHuffman> Frecuencias = new Dictionary<string, NodoHuffman>();
+        string Root = String.Empty;
+        public void Comprimir(string _root)   
         {
-            var reader = new StreamReader(root);
+            Root = _root;
+            ObtenerFrecuencias();
+            ArmarArbol();
+
+        }
+
+        public void ArmarArbol()
+        {
+            Frecuencias = Diccionario;
+            var temp = Diccionario.ToArray();
+            
+            var contador = 1    ;
+            while (Diccionario.Count != 1)
+            {
+                //juntar
+                var nuevo = new NodoHuffman($"C{contador}")
+                {
+
+                }
+
+                //eliminar
+                //Ordenar
+
+            }
+        }
+        public void ObtenerFrecuencias()
+        {
+            var reader = new StreamReader(Root);
             var texto = reader.ReadToEnd();
             foreach (var item in texto)
             {
@@ -33,7 +61,7 @@ namespace API.Data
                 else
                 {
                     //nuevo
-                    Diccionario.Add(item.ToString(),new NodoHuffman(item));
+                    Diccionario.Add(item.ToString(), new NodoHuffman(item.ToString()));
                 }
             }
             foreach (var item in Diccionario)
@@ -45,12 +73,11 @@ namespace API.Data
             Diccionario = new Dictionary<string, NodoHuffman>();
             foreach (var item in Sorting)
             {
-                Diccionario.Add(item.Key,item.Value);
-
+                Diccionario.Add(item.Key, item.Value);
             }
 
             //C:\Users\roche\Desktop\Tony\Lab1Compresion_\Compresion\BIBLIA COMPLETA.txt
+            reader.Close();
         }
-
     }
 }
