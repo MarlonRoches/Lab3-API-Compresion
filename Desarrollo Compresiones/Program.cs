@@ -12,7 +12,7 @@ namespace Desarrollo_Compresiones
         static void Main(string[] args)
         {
             var root = Console.ReadLine();
-            ArbolHuffman.Instance.Comprimir(root);
+            ArbolHuffman.Instance.MainCompresionHuffman(root);
             Console.ReadLine();
         }
     }
