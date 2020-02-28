@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.IO;
 using API.Models;
+using System.Web;
+
 namespace API.Data
 {
     public class ArbolHuffman
@@ -17,9 +19,18 @@ namespace API.Data
                 return _instance;
             }
         }
-        Dictionary<char, double> Diccionario = new Dictionary<char, double>();
-        Dictionary<string, NodoHuffman> Frecuencias = new Dictionary<string, NodoHuffman>();
-        string Root = String.Empty;
+        #region Variables
+
+        List<NodoHuffman> Arbol = new List<NodoHuffman>();
+        private int bufferLength = 8;
+        public Dictionary<char, decimal> Letras = new Dictionary<char, decimal>();
+        public List<NodoHuffman> DiccionarioPrefijos = new List<NodoHuffman>();
+        int cantidad_de_letras = 0;
+        Dictionary<char, string> IndexID = new Dictionary<char, string>();
+        string patth = null;
+        string rutaAGuardar;
+        public bool escrito;
+        #endregion
         public void Comprimir(string _root)   
         {
             Root = _root;
