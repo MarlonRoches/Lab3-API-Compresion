@@ -33,6 +33,7 @@ namespace API.Data
         string rutaAGuardar;
         public bool escrito;
         Dictionary<byte, string> DicPrefijos = new Dictionary<byte, string>();
+        Dictionary<string, string> LetPrefijos = new Dictionary<string, string>();
         #endregion
 
         //C:\Users\roche\Desktop\BIBLIA COMPLETA.txt
@@ -143,6 +144,7 @@ namespace API.Data
             if (_Actual.Derecha == null && _Actual.Izquierda == null)
             {
                 DicPrefijos.Add(_Actual.Nombre, prefijo);
+                LetPrefijos.Add(((char)_Actual.Nombre).ToString(), prefijo);
             }
             else
             {
@@ -164,10 +166,11 @@ namespace API.Data
             var Name = Path.GetFileNameWithoutExtension(GlobalPath);
             var file = new FileStream($"{path}\\Compressed_{Name}.huff",FileMode.OpenOrCreate);
             var writer = new StreamWriter(file);
-            foreach (var item in DicPrefijos)
+            foreach (var item in LetPrefijos)
             {
-                writer.WriteLine($"{(char)item.Key}|{item.Value}");
+                writer.WriteLine($"{item.Key}|{item.Value}|");//178
             }
+            writer.WriteLine("££");//179│
             writer.Close();
             file.Close();
         }
@@ -197,7 +200,7 @@ namespace API.Data
                 } 
 
             }
-
+            DeCompressed.Close();
             Compressed.Close();
         }
         public void PrefijoMasGrande()
@@ -226,6 +229,18 @@ namespace API.Data
                 baseVal = baseVal * 2;
             }
             return Convert.ToByte(decVal);
+        }
+
+
+        public void HuffDescompresion(string _path)
+        {
+            GlobalPath = _path;
+            var file = new FileStream(GlobalPath, FileMode.Open);
+            var lector = new StreamReader(file);
+            string diccionario = string.Empty;
+            var caract = lector.ReadToEnd();
+            var lol = caract.IndexOf("££");
+            }
         }
     }
 }
