@@ -166,11 +166,11 @@ namespace API.Data
             var Name = Path.GetFileNameWithoutExtension(GlobalPath);
             var file = new FileStream($"{path}\\Compressed_{Name}.huff",FileMode.OpenOrCreate);
             var writer = new StreamWriter(file);
-            foreach (var item in LetPrefijos)
+            foreach (var item in DicPrefijos)
             {
-                writer.WriteLine($"{item.Key}|{item.Value}|");//178
+                writer.WriteLine($"{item.Key.ToString()}|{item.Value}^");//178
             }
-            writer.WriteLine("££");//179│
+            writer.WriteLine("END");//179│
             writer.Close();
             file.Close();
         }
@@ -234,13 +234,32 @@ namespace API.Data
 
         public void HuffDescompresion(string _path)
         {
+            var Reconstruido = new Dictionary<string, char>();
             GlobalPath = _path;
             var file = new FileStream(GlobalPath, FileMode.Open);
             var lector = new StreamReader(file);
             string diccionario = string.Empty;
-            var caract = lector.ReadToEnd();
-            var lol = caract.IndexOf("££");
+            var caract = lector.Read();
+            var position = 0;
+            while (!diccionario.Contains("END"))
+            {
+                diccionario += (char)((byte)caract);
+                caract = lector.Read();
             }
+            position= diccionario.Replace("\r","").Length+1;
+            var xz = diccionario.Replace("\r\n","").Replace("END","").Split('^');
+            var cont = 0;
+            foreach (var item in xz)
+            {
+                if (item =="")
+                {
+                    break;
+                }
+                cont++;
+                var lol = item.Split('|');
+                Reconstruido.Add(lol[1],lol[0][0]);
+            }
+            file.Position =position;
         }
     }
 }
