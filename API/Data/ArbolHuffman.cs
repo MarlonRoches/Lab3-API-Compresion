@@ -256,10 +256,40 @@ namespace API.Data
                     break;
                 }
                 cont++;
-                var lol = item.Split('|');
-                Reconstruido.Add(lol[1],lol[0][0]);
+                var splited = item.Split('|');
+                Reconstruido.Add(splited[1],(char)(byte)int.Parse(splited[0]));
             }
             file.Position =position;
+            var byteBuffer = new byte[bufferLength];//buffer
+            var bin= new BinaryReader(file);
+            bin.BaseStream.Position = position+2;
+
+            var descompreso = string.Empty;
+            var actual = string.Empty;
+            var residuo = string.Empty;
+            lector.Read();
+            while (lector.BaseStream.Position!= lector.BaseStream.Length)
+            {
+                var lol = lector.Read();
+                var xd = (char)lol;
+                actual += Convert.ToString(lol ,2);
+                for (int i = 0; i < actual.Length; i++)
+                {
+                    var x = actual.Substring(0, i);
+                    if (Reconstruido.ContainsKey(actual))
+                    {//1001010011
+                        // original
+                        var xasd = Reconstruido[actual];
+
+                    }
+                    else
+                    {
+                        // nada
+                    }
+                }
+                lector.BaseStream.Position++;
+            }
         }
+        
     }
 }
