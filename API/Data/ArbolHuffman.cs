@@ -37,6 +37,7 @@ namespace API.Data
         #endregion
 
         //C:\Users\roche\Desktop\BIBLIA COMPLETA.txt
+        //C:\Users\roche\Desktop\Tea.txt
         public void MainCompresionHuffman(string _root)
         {
             GlobalPath = _root;
@@ -170,7 +171,7 @@ namespace API.Data
             {
                 writer.WriteLine($"{item.Key.ToString()}|{item.Value}^");//178
             }
-            writer.WriteLine("END");//179│
+            writer.Write("END");//179│
             writer.Close();
             file.Close();
         }
@@ -191,11 +192,12 @@ namespace API.Data
                 foreach (var Caracter in byteBuffer)
                 {
                     x += DicPrefijos[Caracter];
-                    if (x.Length >=8)
+                    if (x.Length >= 8)
                     {
-                        var bytewrt = StrToBy(x.Substring(0,8));
+                        var bytewrt = (Char)StrToBy(x.Substring(0, 8));
                         x = x.Remove(0, 8);
-                        writer.Write(bytewrt);
+                        textocomprimido += bytewrt;
+                         writer.Write(bytewrt);
                     }
                 } 
 
@@ -259,20 +261,17 @@ namespace API.Data
                 var splited = item.Split('|');
                 Reconstruido.Add(splited[1],(char)(byte)int.Parse(splited[0]));
             }
-            file.Position =position;
             var byteBuffer = new byte[bufferLength];//buffer
-            var bin= new BinaryReader(file);
-            bin.BaseStream.Position = position+2;
+            
 
             var descompreso = string.Empty;
             var actual = string.Empty;
             var residuo = string.Empty;
-            lector.Read();
+            
             while (lector.BaseStream.Position!= lector.BaseStream.Length)
             {
-                var lol = lector.Read();
-                var xd = (char)lol;
-                actual += Convert.ToString(lol ,2);
+                var xd = (char)caract;
+                actual += Convert.ToString(caract ,2);
                 for (int i = 0; i < actual.Length; i++)
                 {
                     var x = actual.Substring(0, i);
@@ -288,6 +287,7 @@ namespace API.Data
                     }
                 }
                 lector.BaseStream.Position++;
+                caract = lector.Read();
             }
         }
         
