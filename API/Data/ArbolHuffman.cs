@@ -22,7 +22,14 @@ namespace API.Data
         }
         #region Variables
 
-        List<NodoHuffman> Arbol = new List<NodoHuffman>();
+        
+        #endregion
+
+        //C:\Users\roche\Desktop\BIBLIA COMPLETA.txt
+        //C:\Users\roche\Desktop\Tea.txt
+        public void MainCompresionHuffman(string _root)
+        {
+            List<NodoHuffman> Arbol = new List<NodoHuffman>();
         private int bufferLength = 10000;
         public Dictionary<char, decimal> Letras = new Dictionary<char, decimal>();
         public List<NodoHuffman> DiccionarioPrefijos = new List<NodoHuffman>();
@@ -34,13 +41,7 @@ namespace API.Data
         public bool escrito;
         Dictionary<byte, string> DicPrefijos = new Dictionary<byte, string>();
         Dictionary<string, string> LetPrefijos = new Dictionary<string, string>();
-        #endregion
-
-        //C:\Users\roche\Desktop\BIBLIA COMPLETA.txt
-        //C:\Users\roche\Desktop\Tea.txt
-        public void MainCompresionHuffman(string _root)
-        {
-            GlobalPath = _root;
+        GlobalPath = _root;
             var file = new FileStream(GlobalPath, FileMode.OpenOrCreate);
             var Lector = new BinaryReader(file);
             var byteBuffer = new byte[bufferLength];//buffer
@@ -241,13 +242,13 @@ namespace API.Data
             var file = new FileStream(GlobalPath, FileMode.Open);
             var lector = new StreamReader(file);
             string diccionario = string.Empty;
-            var caract = lector.Read();
+            var CaracterActual = lector.Read();
             var position = 0;
             var cont = 0;
             while (!diccionario.Contains("END"))
             {
-                diccionario += (char)((byte)caract);
-                caract = lector.Read();
+                diccionario += (char)((byte)CaracterActual);
+                CaracterActual = lector.Read();
                 cont ++;
             }
             position= diccionario.Replace("\r","").Length+1;
@@ -267,13 +268,12 @@ namespace API.Data
             var path = Path.GetDirectoryName(GlobalPath); var descompreso = string.Empty;
             var Name = Path.GetFileNameWithoutExtension(GlobalPath);            var actual = string.Empty;
               var decompresofile = new FileStream($"{path}\\Back_{Name}.txt", FileMode.Create);
-            var los = new BinaryWriter(decompresofile);
-            var residuo = string.Empty;
+            var writer = new BinaryWriter(decompresofile);
             
             while (cont != lector.BaseStream.Length)
             {
-                var xd = (char)caract;
-                actual += Convert.ToString(caract ,2).PadLeft(8, '0');
+                var xd = (char)CaracterActual;
+                actual += Convert.ToString(CaracterActual ,2).PadLeft(8, '0');
                 for (int i = 0; i < actual.Length; i++)
                 {
                     var x = actual.Substring(0, i);
@@ -281,7 +281,7 @@ namespace API.Data
                     {//1001010011
                      // original
                      //descompreso += Reconstruido[x];
-                        los.Write(Reconstruido[x]);
+                        writer.Write(Reconstruido[x]);
 
                         actual = actual.Remove(0, i);
                     }
@@ -291,9 +291,9 @@ namespace API.Data
                     }
                 }
                 cont++;
-                caract = lector.Read();
+                CaracterActual = lector.Read();
             }
-            los.Close();
+            writer.Close();
             file.Close();
             lector.Close();
         }
