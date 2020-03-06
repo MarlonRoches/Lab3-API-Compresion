@@ -243,53 +243,60 @@ namespace API.Data
             string diccionario = string.Empty;
             var caract = lector.Read();
             var position = 0;
+            var cont = 0;
             while (!diccionario.Contains("END"))
             {
                 diccionario += (char)((byte)caract);
                 caract = lector.Read();
+                cont ++;
             }
             position= diccionario.Replace("\r","").Length+1;
             var xz = diccionario.Replace("\r\n","").Replace("END","").Split('^');
-            var cont = 0;
+
             foreach (var item in xz)
             {
                 if (item =="")
                 {
                     break;
                 }
-                cont++;
                 var splited = item.Split('|');
                 Reconstruido.Add(splited[1],(char)(byte)int.Parse(splited[0]));
             }
             var byteBuffer = new byte[bufferLength];//buffer
-            
 
-            var descompreso = string.Empty;
-            var actual = string.Empty;
+            var path = Path.GetDirectoryName(GlobalPath); var descompreso = string.Empty;
+            var Name = Path.GetFileNameWithoutExtension(GlobalPath);            var actual = string.Empty;
+              var decompresofile = new FileStream($"{path}\\Back_{Name}.txt", FileMode.Create);
+            var los = new BinaryWriter(decompresofile);
             var residuo = string.Empty;
             
-            while (lector.BaseStream.Position!= lector.BaseStream.Length)
+            while (cont != lector.BaseStream.Length)
             {
                 var xd = (char)caract;
-                actual += Convert.ToString(caract ,2);
+                actual += Convert.ToString(caract ,2).PadLeft(8, '0');
                 for (int i = 0; i < actual.Length; i++)
                 {
                     var x = actual.Substring(0, i);
-                    if (Reconstruido.ContainsKey(actual))
+                    if (Reconstruido.ContainsKey(x))
                     {//1001010011
-                        // original
-                        var xasd = Reconstruido[actual];
+                     // original
+                     //descompreso += Reconstruido[x];
+                        los.Write(Reconstruido[x]);
 
+                        actual = actual.Remove(0, i);
                     }
                     else
                     {
                         // nada
                     }
                 }
-                lector.BaseStream.Position++;
+                cont++;
                 caract = lector.Read();
             }
+            los.Close();
+            file.Close();
+            lector.Close();
         }
-        
+
     }
 }
