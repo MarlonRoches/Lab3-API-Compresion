@@ -13,7 +13,8 @@ namespace Desarrollo_Compresiones
         {
             var root = Console.ReadLine();
             ArbolHuffman.Instance.MainCompresionHuffman(root);
-            Console.ReadLine();
+            ArbolHuffman.Instance.HuffDescompresion("C:\\Users\\roche\\Desktop\\Compressed_Tea.huff");
+           
         }
     }
 }
