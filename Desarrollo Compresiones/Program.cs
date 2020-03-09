@@ -12,8 +12,8 @@ namespace Desarrollo_Compresiones
         static void Main(string[] args)
         {
             var root = Console.ReadLine();
-            ArbolHuffman.Instance.MainCompresionHuffman(root);
-            ArbolHuffman.Instance.HuffDescompresion("C:\\Users\\roche\\Desktop\\Compressed_Tea.huff");
+            ArbolHuffman.Instance.Compresion_Huffman(root);
+            ArbolHuffman.Instance.Descompresio_Huffman("C:\\Users\\roche\\Desktop\\Compressed_Tea.huff");
            
         }
     }

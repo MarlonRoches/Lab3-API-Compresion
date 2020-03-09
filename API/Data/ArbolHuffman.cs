@@ -22,26 +22,25 @@ namespace API.Data
         }
         #region Variables
 
-        
-        #endregion
-
-        //C:\Users\roche\Desktop\BIBLIA COMPLETA.txt
-        //C:\Users\roche\Desktop\Tea.txt
-        public void MainCompresionHuffman(string _root)
-        {
-            List<NodoHuffman> Arbol = new List<NodoHuffman>();
+        List<NodoHuffman> Arbol = new List<NodoHuffman>();
         private int bufferLength = 10000;
-        public Dictionary<char, decimal> Letras = new Dictionary<char, decimal>();
-        public List<NodoHuffman> DiccionarioPrefijos = new List<NodoHuffman>();
+         Dictionary<char, decimal> Letras = new Dictionary<char, decimal>();
+         List<NodoHuffman> DiccionarioPrefijos = new List<NodoHuffman>();
         int cantidad_de_letras = 0;
         int max = 0;
         Dictionary<char, string> IndexID = new Dictionary<char, string>();
         string GlobalPath = null;
         string rutaAGuardar;
-        public bool escrito;
+         bool escrito;
         Dictionary<byte, string> DicPrefijos = new Dictionary<byte, string>();
         Dictionary<string, string> LetPrefijos = new Dictionary<string, string>();
-        GlobalPath = _root;
+        #endregion
+
+        //C:\Users\roche\Desktop\BIBLIA COMPLETA.txt
+        //C:\Users\roche\Desktop\Tea.txt
+        public void Compresion_Huffman(string _root)
+        {
+            GlobalPath = _root;
             var file = new FileStream(GlobalPath, FileMode.OpenOrCreate);
             var Lector = new BinaryReader(file);
             var byteBuffer = new byte[bufferLength];//buffer
@@ -87,7 +86,7 @@ namespace API.Data
             PrefijoMasGrande();
             ComprimirTexto();
         }
-        public void InsertarEnLaLista()
+        void InsertarEnLaLista()
         {
             var asignado = false;
             DiccionarioPrefijos = Arbol.OrderBy(x => x.Probabilidad).ToList();
@@ -141,7 +140,7 @@ namespace API.Data
                 Prefijos(Arbol[0],"");
             
         }
-        public void Prefijos(NodoHuffman _Actual, string prefijo)
+         void Prefijos(NodoHuffman _Actual, string prefijo)
         {
             if (_Actual.Derecha == null && _Actual.Izquierda == null)
             {
@@ -162,7 +161,7 @@ namespace API.Data
 
             }
         }
-        public void EscribirDiccionario()
+         void EscribirDiccionario()
         {
             var path = Path.GetDirectoryName(GlobalPath);
             var Name = Path.GetFileNameWithoutExtension(GlobalPath);
@@ -176,7 +175,7 @@ namespace API.Data
             writer.Close();
             file.Close();
         }
-        public void ComprimirTexto()
+         void ComprimirTexto()
         {
             var textocomprimido = string.Empty;
             var path = Path.GetDirectoryName(GlobalPath);
@@ -195,7 +194,7 @@ namespace API.Data
                     x += DicPrefijos[Caracter];
                     if (x.Length >= 8)
                     {
-                        var bytewrt = (Char)StrToBy(x.Substring(0, 8));
+                        var bytewrt = (Char)String_A_Byte(x.Substring(0, 8));
                         x = x.Remove(0, 8);
                         textocomprimido += bytewrt;
                          writer.Write(bytewrt);
@@ -206,7 +205,7 @@ namespace API.Data
             DeCompressed.Close();
             Compressed.Close();
         }
-        public void PrefijoMasGrande()
+         void PrefijoMasGrande()
         {
             foreach (var item in DicPrefijos)
             {
@@ -216,7 +215,7 @@ namespace API.Data
                 }
             }
         }
-        byte StrToBy(string bufer) //String binario a byte
+        byte String_A_Byte(string bufer) //String binario a byte
         {
 
             int num, binVal, decVal = 0, baseVal = 1, rem;
@@ -235,7 +234,7 @@ namespace API.Data
         }
 
 
-        public void HuffDescompresion(string _path)
+        public void Descompresio_Huffman(string _path)
         {
             var Reconstruido = new Dictionary<string, char>();
             GlobalPath = _path;
@@ -252,9 +251,9 @@ namespace API.Data
                 cont ++;
             }
             position= diccionario.Replace("\r","").Length+1;
-            var xz = diccionario.Replace("\r\n","").Replace("END","").Split('^');
+            var RawDoc = diccionario.Replace("\r\n","").Replace("END","").Split('^');
 
-            foreach (var item in xz)
+            foreach (var item in RawDoc)
             {
                 if (item =="")
                 {
@@ -263,31 +262,22 @@ namespace API.Data
                 var splited = item.Split('|');
                 Reconstruido.Add(splited[1],(char)(byte)int.Parse(splited[0]));
             }
-            var byteBuffer = new byte[bufferLength];//buffer
-
+            
             var path = Path.GetDirectoryName(GlobalPath); var descompreso = string.Empty;
             var Name = Path.GetFileNameWithoutExtension(GlobalPath);            var actual = string.Empty;
-              var decompresofile = new FileStream($"{path}\\Back_{Name}.txt", FileMode.Create);
+              var decompresofile = new FileStream($"{path}\\DesComp_{Name}.txt", FileMode.Create);
             var writer = new BinaryWriter(decompresofile);
             
             while (cont != lector.BaseStream.Length)
             {
-                var xd = (char)CaracterActual;
                 actual += Convert.ToString(CaracterActual ,2).PadLeft(8, '0');
                 for (int i = 0; i < actual.Length; i++)
                 {
                     var x = actual.Substring(0, i);
                     if (Reconstruido.ContainsKey(x))
-                    {//1001010011
-                     // original
-                     //descompreso += Reconstruido[x];
-                        writer.Write(Reconstruido[x]);
-
-                        actual = actual.Remove(0, i);
-                    }
-                    else
                     {
-                        // nada
+                        writer.Write(Reconstruido[x]);
+                        actual = actual.Remove(0, i);
                     }
                 }
                 cont++;
