@@ -13,7 +13,7 @@ namespace Desarrollo_Compresiones
         static void Main(string[] args)
         {
            // var root = Console.ReadLine();
-            LWZ.Instance.CompresionLZW("C:\\Users\\roche\\Desktop\\Tea.txt");
+            LWZ.Instance.CompresionLZW("C:\\Users\\roche\\Desktop\\Tony\\Lab1Compresion_\\Compresion\\BIBLIA COMPLETA.txt");
             ArbolHuffman.Instance.Compresion_Huffman("");
             ArbolHuffman.Instance.Descompresio_Huffman("C:\\Users\\roche\\Desktop\\Compressed_Tea.huff");
            
