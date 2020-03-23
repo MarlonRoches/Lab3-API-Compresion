@@ -17,18 +17,10 @@ namespace API_Compresion.Controllers
         [HttpGet]
         public ActionResult<string> Get()
         {
-            return "Estaba terminandno mi lab" +
-"Solo me falta subir el archivo desde postman                                       " +
-"Pero me di cuenta que el VS 17 no soporta .Net Core 3.1, solo las que menores a 2.1" +
-"La biblioteca IWebHostEnviorment no la puedo usar                                  " +
-"Y eso es para poder hostear el archivo                                             " +
-"Lo que hare será enviar la ruta desde el body, por el momento                      " +
-"Mañana nada mas pueda actualizarlo                                                 " +
-"Bajaré visual 19 para trabajar a partir de alli los demas labs                     " +
-"Disculpe la molestia";
+            return "";
         }
         [HttpPost("Compresion/{tipo}")]
-        public async Task<IActionResult> CompresionHuffman(IFormFile file, string tipo)
+        public async Task<IActionResult> Compresiones(IFormFile file, string tipo)
         {
             var lol = file.OpenReadStream();
             var reader = new StreamReader(file.OpenReadStream());
@@ -39,12 +31,28 @@ namespace API_Compresion.Controllers
             {
                 listabytes.Add(item.ToString());
             }
-            
-            Data.LWZ_API.Instance.CompresionLZW(listabytes, file.FileName);
-            return Ok();
+            if (tipo =="" || tipo == null)
+            {
+                return BadRequest();
+            }
+            else
+            {
+
+                if (tipo.ToLower() == "lzw")
+                {
+                return Ok();
+
+                Data.LWZ_API.Instance.CompresionLZW(listabytes, file.FileName);
+                }
+                else
+                {
+                    //huffman
+                return Ok();
+                }
+            }
         }
         [HttpPost("Desompresion/{tipo}")]
-        public async Task<IActionResult> DesCompresionHuffman(IFormFile file, string tipo)
+        public async Task<IActionResult> Descompresiones(IFormFile file, string tipo)
         {
             var lol = file.OpenReadStream();
             var reader = new StreamReader(file.OpenReadStream());
@@ -55,8 +63,24 @@ namespace API_Compresion.Controllers
             {
                 listabytes.Add(item.ToString());
             }
-            Data.LWZ_API.Instance.DescompresionLZW(listabytes, file.FileName);
-            return Ok();
+            if (tipo == "" || tipo == null)
+            {
+                return BadRequest();
+            }
+            else
+            {
+                if (tipo.ToLower() == "lzw")
+                {
+                    Data.LWZ_API.Instance.DescompresionLZW(listabytes, file.FileName);
+                    return Ok();
+                }
+                else
+                {
+                    //huffman
+                    return Ok();
+
+                }
+            }
         }
     }
 }
