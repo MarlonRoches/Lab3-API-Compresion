@@ -33,30 +33,38 @@ namespace Desarrollo_Compresiones
             void CompresionLZW()
             {
                 var file = new FileStream(_Path, FileMode.Open); // cambiar a dinamico
-                var lectura = new BinaryReader(file);
-                var Buffer = new byte[10000];//buffer
+                var lectura = new StreamReader(file);
+                string Buffer = "";//buffer
                 Iteracion--;
-                while (lectura.BaseStream.Position != lectura.BaseStream.Length)
-                {
-                    Buffer = lectura.ReadBytes(10000);
+//w=NULL
+                
+                    Buffer = lectura.ReadToEnd();
+//MIENTRAS (!EOF)
                     foreach (var Caracter in Buffer)
                     {
                         var WK = "";
                         if (W == "")
                         {
-                            //caso inicial
-                            WK = ((char)Caracter).ToString();
+                            WK = (Caracter).ToString();
                             Validacion_Diccionario(WK);
                         }
                         else
                         {
-                            //demas casos
                             K = ((char)Caracter).ToString();
                             WK = W + K;
                             Validacion_Diccionario(WK);
                         }
-                    } //llenar el diccionario con la cantidad total de letras
-                }
+                    } 
+//...LEER K
+//...SI (wK está en el diccionario) ENTONCES
+//......w=wK
+//...SINO
+//......Imprimir el código de w
+//......Agregar wK al diccionario
+//......w=K
+//...FIN_SI
+//FIN_MIENTRAS
+//Imprimir el código de w
 
                 //ULTIMA INSTRUCCION QUE ES ESCRIBIR LA ULTIMA LINEA
                 Agregar_A_Salida(DiccionarioGeneral[W], false);
@@ -128,20 +136,21 @@ namespace Desarrollo_Compresiones
             //methods
             Dictionary<string, int> ObetnerDiccionarioInicial()
             {
-                int bufferLength = 10000;
-                //patth = path;
-                //rutaAGuardar = ruta;
                 var File = new FileStream(_Path, FileMode.Open); // cambiar a dinamico
-                var Lector = new BinaryReader(File);
-                var byteBuffer = new byte[bufferLength];//buffer
+                var Lector = new StreamReader(File);
+                var byteBuffer = string.Empty;//buffer
                 var Diccionario = new Dictionary<string, int>();
                 Iteracion = 0;
                 while (Lector.BaseStream.Position != Lector.BaseStream.Length)
                 {
-                    byteBuffer = Lector.ReadBytes(bufferLength);
+                    byteBuffer = Lector.ReadToEnd();
                     foreach (var Caracter in byteBuffer) //Crear diccionario de letras
                     {
-                        if (!Diccionario.ContainsKey(Convert.ToString((char)Caracter))) { Diccionario.Add(Convert.ToString((char)Caracter), Iteracion); Iteracion++; }
+                        if (!Diccionario.ContainsKey(Convert.ToString(Caracter))) 
+                        { 
+                            Diccionario.Add(Convert.ToString(Caracter), Iteracion); 
+                            Iteracion++; 
+                        }
                     }
                 }
 
@@ -209,18 +218,17 @@ namespace Desarrollo_Compresiones
         }
         public void LZWDecompress(string path)
         {
-            var Traducir = new Dictionary<int, string>();
+            var DiccionarioTemp = new Dictionary<int, string>();
             var n = 0;
-            var directory = Path.GetDirectoryName(path);
-            var name = Path.GetFileNameWithoutExtension(path);
+            
             var compreso = new FileStream(path, FileMode.Open);
             var lector = new StreamReader(compreso);
             var linea = string.Empty; 
                 linea +=(char)lector.Read();
 
-            int codViejo = 0;
-            int codNuevo = 0;
-            var Cadena = string.Empty;
+            int Anterior = 0;
+            int Actual = 0;
+            var Actuals = string.Empty;
             var caracter = string.Empty;
             var Salida = string.Empty;
             while (!linea.Contains("END"))
@@ -239,20 +247,20 @@ namespace Desarrollo_Compresiones
                 if (temp.Length==3)
                 {
                     // tiene | incluido
-                   Traducir.Add(int.Parse(temp[2]), "|");
+                   DiccionarioTemp.Add(int.Parse(temp[2]), "|");
                 }
                 else
                 {
-                   Traducir.Add(int.Parse(temp[1]), temp[0]);
+                   DiccionarioTemp.Add(int.Parse(temp[1]), temp[0]);
 
                 }
 
             }
             //LEER cód_viejo
-            n = Traducir.Count();
-            codViejo = lector.Read();
+            n = DiccionarioTemp.Count();
+            Anterior = lector.Read();
             //carácter=Traducir(cód_viejo)
-            caracter = Traducir[codViejo];
+            caracter = DiccionarioTemp[Anterior];
             //Imprimir carácter
             Salida += caracter;
 
@@ -260,88 +268,49 @@ namespace Desarrollo_Compresiones
             while (true)
             {
                 //...LEER cód_nuevo
-                codNuevo = lector.Read();
-                if (codNuevo==-1)
+                Actual = lector.Read();
+                if (Actual==-1)
                 {
                     break;
                 }
                 //...SI (cód_nuevo no está en el diccionario) ENTONCES
-                if (!Traducir.ContainsKey(codNuevo))
+                if (!DiccionarioTemp.ContainsKey(Actual))
                 {
+                    Actuals = DiccionarioTemp[Anterior]+ DiccionarioTemp[Anterior][0];
                     //......cadena=Traducir(cód_viejo)
-                    Cadena = Traducir[codViejo];
+                    DiccionarioTemp.Add(n, Actuals);
+                    n++;
+                    Salida += Actual;
                     //......cadena=cadena+caracter
-                    Cadena = Cadena + caracter;
+                    Anterior = Actual;
                 }
                 //...SINO
                 else
                 {
                     //......cadena=Traducir(cód_nuevo)
-                    Cadena = Traducir[codNuevo];
+                    Actuals = DiccionarioTemp[Actual];
                     //...Imprimir cadena
-                    Salida += Cadena;
+                    Salida += Actuals;
                     //...carácter=Primer carácter de cadena
-                    caracter = Cadena[0].ToString();
+                    caracter = Actuals[0].ToString();
                     //...Agregar Traducir(cód_viejo)+carácter al diccionario
-                    Traducir.Add(n, $"{Traducir[codViejo]}{caracter}");
+                    DiccionarioTemp.Add(n, $"{DiccionarioTemp[Anterior]}{caracter}");
                     n++;
                     //...cód_viejo=cód_nuevo
-                    codViejo = codNuevo;
+                    Anterior = Actual;
                 }
                 //...FIN_SI
                 //FIN_MIENTRAS
             }
 
-
-
-
-
-
-
-            //var compreso = new FileStream(path, FileMode.Open); // cambiar a dinamico
-            //var lectura = new BinaryReader(compreso);
-            //var Buffer = new byte[10000];//buffer
-            //while (lectura.BaseStream.Position != lectura.BaseStream.Length)
-            //{
-            //    Buffer = lectura.ReadBytes(10000);
-
-            //    var DiccionarioDescompresion = new Dictionary<string, int>();
-            //    var key = DiccionarioDescompresion.Keys;
-            //    DiccionarioDescompresion = ObetnerDiccionarioInicial(path);
-            //    for (int i = 0; i < 256; i++)
-            //    {
-            //        DiccionarioDescompresion.Add(((char)i).ToString(), i);
-            //    }
-            //    //Caso en donde hay textos con menos de 256 combinaciones
-            //    var cont = DiccionarioDescompresion[Encoding.UTF8.GetString(Buffer, 0, Buffer.Length)];
-            //    string a = Convert.ToString(cont);
-            //    var EscritorDes = new StringBuilder(cont);
-            //    var EscribirDescompresion = new StreamWriter(descompreso);
-            //    var conv = Encoding.UTF8.GetString(Buffer);
-            //    foreach (var u in conv)
-            //    {
-            //        string Entrada = "";
-            //        if (DiccionarioDescompresion.ContainsKey(u.ToString()))
-            //        {
-
-            //            //Entrada = DiccionarioDescompresion[u.ToString()];
-            //        }
-            //        else if (u == DiccionarioDescompresion.Count)
-            //        {
-            //            Entrada = a + a[0];
-            //        }
-
-
-
-            //        EscritorDes.Append(Entrada);
-
-            //        //codigo nuevo agregado al diccionario
-            //        DiccionarioDescompresion.Add(a + Entrada[0], DiccionarioDescompresion.Count);
-
-            //        a = Entrada;
-            //    }
-            //    EscribirDescompresion.Write(EscritorDes);
-            //}
+            var directory = Path.GetDirectoryName(path);
+            var name = Path.GetFileNameWithoutExtension(path);
+            var Decompress = new FileStream($"{directory}\\Dec_{name}.txt",FileMode.Create);
+            var writer = new StreamWriter(Decompress);
+            foreach (var item in Salida)
+            {
+                writer.Write(item.ToString());
+            }
         }
     }
 }
