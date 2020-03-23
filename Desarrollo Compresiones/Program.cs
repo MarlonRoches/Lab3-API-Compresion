@@ -12,10 +12,20 @@ namespace Desarrollo_Compresiones
     {
         static void Main(string[] args)
         {
-           // var root = Console.ReadLine();
-            LWZ.Instance.CompresionLZW("C:\\Users\\roche\\Desktop\\Tony\\Lab1Compresion_\\Compresion\\BIBLIA COMPLETA.txt");
-            ArbolHuffman.Instance.Compresion_Huffman("");
-            ArbolHuffman.Instance.Descompresio_Huffman("C:\\Users\\roche\\Desktop\\Compressed_Tea.huff");
+            // var root = Console.ReadLine();
+            //C:\\Users\\roche\\Desktop\\Tea.txt
+            //C:\\Users\\roche\\Desktop\\Tony\\Lab1Compresion_\\Compresion\\BIBLIA COMPLETA.txt
+            //C:\\Users\\roche\\Desktop\\Tony\\Lab1Compresion_\\Compresion\\BIBLIA COMPLETA.lzw
+            LWZ.Instance.CompresionLZW(Console.ReadLine());
+            LWZ.Instance.LZWDecompress(Console.ReadLine());
+            
+            //LWZ.Instance.CompresionLZW("C:\\Users\\roche\\Desktop\\BackUpLZW.txt");
+            //LWZ.Instance.LZWDecompress("C:\\Users\\roche\\Desktop\\BackUpLZW.lzw");
+
+           // LWZ.Instance.CompresionLZW("C:\\Users\\roche\\Desktop\\Tony\\Lab1Compresion_\\Compresion\\BIBLIA COMPLETA.txt");
+            //LWZ.Instance.LZWDecompress("C:\\Users\\roche\\Desktop\\Tony\\Lab1Compresion_\\Compresion\\BIBLIA COMPLETA.lzw");
+            //ArbolHuffman.Instance.Compresion_Huffman("");
+            //ArbolHuffman.Instance.Descompresio_Huffman("C:\\Users\\roche\\Desktop\\Compressed_Tea.huff");
            
         }
     }
