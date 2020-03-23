@@ -19,9 +19,9 @@ namespace Desarrollo_Compresiones
             }
         }
 
-        public void CompresionLZW(string _Path)
+        public void CompresionLZW(List<string> Caracteres, string nombre)
         {
-            int Iteracion;
+            int Iteracion = 0;
             string salida = "";  //cambiar por escritura del archivo
             string W = "", K = "";
             var DiccionarioGeneral = ObetnerDiccionarioInicial();//poner como parametro el path global de data
@@ -32,31 +32,25 @@ namespace Desarrollo_Compresiones
 
             void CompresionLZW()
             {
-                var file = new FileStream(_Path, FileMode.Open); // cambiar a dinamico
-                var lectura = new StreamReader(file);
-                string Buffer = "";//buffer
                 Iteracion--;
-                
-                    Buffer = lectura.ReadToEnd();
-                    foreach (var Caracter in Buffer)
+                foreach (var Caracter in Caracteres)
+                {
+                    var WK = "";
+                    if (W == "")
                     {
-                        var WK = "";
-                        if (W == "")
-                        {
-                            WK = (Caracter).ToString();
-                            Validacion_Diccionario(WK);
-                        }
-                        else
-                        {
-                            K = ((char)Caracter).ToString();
-                            WK = W + K;
-                            Validacion_Diccionario(WK);
-                        }
-                    } 
+                        WK = (Caracter).ToString();
+                        Validacion_Diccionario(WK);
+                    }
+                    else
+                    {
+                        K = (Caracter).ToString();
+                        WK = W + K;
+                        Validacion_Diccionario(WK);
+                    }
+                }
 
                 Agregar_A_Salida(DiccionarioGeneral[W], false);
                 EscribirCompress();
-                file.Close();
             }
 
             void Validacion_Diccionario(string WK)
@@ -83,15 +77,15 @@ namespace Desarrollo_Compresiones
 
             void Agregar_A_Salida(int id, bool caso)
             {
-                    var carsito = (char)id;
-                    salida += carsito;
+                var carsito = (char)id;
+                salida += carsito;
             }
 
             void EscribirDiccionario()
             {
-                var path = Path.GetDirectoryName(_Path);
-                var name = Path.GetFileNameWithoutExtension(_Path);
-                var File = new FileStream($"{path}\\{name}.lzw", FileMode.Append);
+                string path = Directory.GetCurrentDirectory();
+
+                var File = new FileStream($"{path}\\{nombre.Split('.')[0]}.lzw", FileMode.Append);
                 var writer = new StreamWriter(File);
                 if (diccionarioescrito)
                 {
@@ -106,9 +100,9 @@ namespace Desarrollo_Compresiones
             }
             void EscribirCompress()
             {
-                var path = Path.GetDirectoryName(_Path);
-                var name = Path.GetFileNameWithoutExtension(_Path);
-                var File = new FileStream($"{path}\\{name}.lzw", FileMode.Append);
+                string path = Directory.GetCurrentDirectory();
+
+                var File = new FileStream($"{path}\\{nombre.Split('.')[0]}.lzw", FileMode.Append);
                 var writer = new StreamWriter(File);
                 foreach (var item in salida)
                 {
@@ -119,93 +113,89 @@ namespace Desarrollo_Compresiones
             }
             Dictionary<string, int> ObetnerDiccionarioInicial()
             {
-                var File = new FileStream(_Path, FileMode.Open); // cambiar a dinamico
-                var Lector = new StreamReader(File);
-                var byteBuffer = string.Empty;//buffer
                 var Diccionario = new Dictionary<string, int>();
                 Iteracion = 0;
-                while (Lector.BaseStream.Position != Lector.BaseStream.Length)
+                foreach (var Caracter in Caracteres) //Crear diccionario de letras
                 {
-                    byteBuffer = Lector.ReadToEnd();
-                    foreach (var Caracter in byteBuffer) //Crear diccionario de letras
+
+                    if (!Diccionario.ContainsKey(Convert.ToString(Caracter)))
                     {
-                        if (!Diccionario.ContainsKey(Convert.ToString(Caracter))) 
-                        { 
-                            Diccionario.Add(Convert.ToString(Caracter), Iteracion); 
-                            Iteracion++; 
-                        }
+                        Diccionario.Add(Convert.ToString(Caracter), Iteracion);
+                        Iteracion++;
                     }
                 }
-                File.Close();
+
                 return Diccionario;
             }
         }
-       
-        
-        public void DescompresionLZW(string path)
+
+        public void DescompresionLZW(List<string> Caracteres, string nombre)
         {
             var DiccionarioDescompresion = new Dictionary<int, string>();
             var Iteracion = 0;
-            var compreso = new FileStream(path, FileMode.Open);
-            var lector = new StreamReader(compreso);
-            var linea = string.Empty; 
-            linea +=(char)lector.Read();
+            var linea = string.Empty;
+            linea += Caracteres[0];
+            Caracteres.RemoveAt(0);
             int CodigoViejo = 0, CodigoNuevo = 0;
             string Cadena = string.Empty, Caracter = string.Empty;
-            var Texto_Descompreso = string.Empty;
-           
+            var Salida = string.Empty;
             while (!linea.Contains("END"))
             {
 
-                linea += (char)lector.Read();
+                linea += Caracteres[0];
+
+                Caracteres.RemoveAt(0);
             }
-                var caractrer = linea.Split('♀');
+            var caractrer = linea.Split('♀');
             foreach (var item in caractrer)
             {
-                if (item=="END")
+                if (item == "END")
                 {
                     break;
                 }
-                   var temp = item.Split('|');
-                if (temp.Length==3)
+                var temp = item.Split('|');
+                if (temp.Length == 3)
                 {
                     // tiene | incluido
-                   DiccionarioDescompresion.Add(int.Parse(temp[2]), "|");
+                    DiccionarioDescompresion.Add(int.Parse(temp[2]), "|");
                 }
                 else
                 {
-                   DiccionarioDescompresion.Add(int.Parse(temp[1]), temp[0]);
+                    DiccionarioDescompresion.Add(int.Parse(temp[1]), temp[0]);
 
                 }
 
             }
             Iteracion = DiccionarioDescompresion.Count();
-            CodigoViejo = lector.Read();
+            CodigoViejo = (int)Caracteres[0][0];
+            Caracteres.RemoveAt(0);
             Caracter = DiccionarioDescompresion[CodigoViejo];
-            Texto_Descompreso += Caracter;
+            Salida += Caracter;
 
             //MIENTRAS (!EOF)
-            while (true)
+            while (Caracteres.Count !=0)
             {
                 //...LEER cód_nuevo
-                CodigoNuevo = lector.Read();
-                if (CodigoNuevo==-1)
+                CodigoNuevo = (int)Caracteres[0][0];
+                Caracteres.RemoveAt(0);
+
+                if (CodigoNuevo == -1)
                 {
                     break;
                 }
                 if (!DiccionarioDescompresion.ContainsKey(CodigoNuevo))
                 {
-                    Cadena = DiccionarioDescompresion[CodigoViejo]+ DiccionarioDescompresion[CodigoViejo][0];
+                    Cadena = DiccionarioDescompresion[CodigoViejo] + DiccionarioDescompresion[CodigoViejo][0];
                     DiccionarioDescompresion.Add(Iteracion, Cadena);
                     Iteracion++;
-                    Texto_Descompreso += CodigoNuevo;
+                    Salida += CodigoNuevo;
                     CodigoViejo = CodigoNuevo;
                 }
                 //...SINO
                 else
                 {
                     Cadena = DiccionarioDescompresion[CodigoNuevo];
-                    Texto_Descompreso += Cadena;
+                    Salida += Cadena;
                     Caracter = Cadena[0].ToString();
                     DiccionarioDescompresion.Add(Iteracion, $"{DiccionarioDescompresion[CodigoViejo]}{Caracter}");
                     Iteracion++;
@@ -214,15 +204,22 @@ namespace Desarrollo_Compresiones
             }
 
 
-            //Escritura en archivo
-            var directory = Path.GetDirectoryName(path);
-            var name = Path.GetFileNameWithoutExtension(path);
-            var Decompress = new FileStream($"{directory}\\Dec_{name}.txt",FileMode.Create);
+            //Escritura en archivo 
+            string pathDevuelta = Directory.GetCurrentDirectory();
+            var Decompress = new FileStream($"{pathDevuelta}\\Dec_{nombre.Split('.')[0]}.txt", FileMode.Create);
             var writer = new StreamWriter(Decompress);
-            foreach (var item in Texto_Descompreso)
+            for (int i = 0; i < Salida.Length; i++)
             {
-                writer.Write(item.ToString());
+                if (i == 16033)
+                {
+
+                }
+                writer.Write(Salida[i]);
+
             }
+            writer.Close();
+            Decompress.Close();
         }
+
     }
 }

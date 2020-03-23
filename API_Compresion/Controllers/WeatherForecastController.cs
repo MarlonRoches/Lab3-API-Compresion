@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using API_Compresion.Data;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -30,18 +31,31 @@ namespace API_Compresion.Controllers
         public async Task<IActionResult> CompresionHuffman(IFormFile file, string tipo)
         {
             var lol = file.OpenReadStream();
-            var reader = new BinaryReader(file.OpenReadStream());
+            var reader = new StreamReader(file.OpenReadStream());
+            var longitud = Convert.ToInt32(reader.BaseStream.Length);
+            var buffer = reader.ReadToEnd();
+            var listabytes = new List<string>();
+            foreach (var item in buffer)
+            {
+                listabytes.Add(item.ToString());
+            }
+            
+            Data.LWZ_API.Instance.CompresionLZW(listabytes, file.FileName);
             return Ok();
         }
-        [HttpPost("DesCompresionHuffman")]
-        public async Task<IActionResult> DesCompresionHuffman(IFormFile file)
+        [HttpPost("Desompresion/{tipo}")]
+        public async Task<IActionResult> DesCompresionHuffman(IFormFile file, string tipo)
         {
-            var filePath = Path.GetTempFileName();
-            if (file.Length > 0)
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                    await file.CopyToAsync(stream);
-
-            Data.LWZ.Instance.CompresionLZW("");
+            var lol = file.OpenReadStream();
+            var reader = new StreamReader(file.OpenReadStream());
+            var longitud = Convert.ToInt32(reader.BaseStream.Length);
+            var buffer = reader.ReadToEnd();
+            var listabytes = new List<string>();
+            foreach (var item in buffer)
+            {
+                listabytes.Add(item.ToString());
+            }
+            Data.LWZ_API.Instance.DescompresionLZW(listabytes, file.FileName);
             return Ok();
         }
     }
