@@ -44,10 +44,14 @@ namespace API_Compresion.Controllers
 
                 Data.LWZ_API.Instance.CompresionLZW(listabytes, file.FileName);
                 }
-                else
+                else if (tipo.ToLower() == "huff")
                 {
                     //huffman
                 return Ok();
+                }
+                else
+                {
+                    return BadRequest();
                 }
             }
         }
@@ -74,10 +78,15 @@ namespace API_Compresion.Controllers
                     Data.LWZ_API.Instance.DescompresionLZW(listabytes, file.FileName);
                     return Ok();
                 }
-                else
+                else if (tipo.ToLower() == "huff")
                 {
                     //huffman
                     return Ok();
+
+                }
+                else
+                {
+                    return BadRequest();
 
                 }
             }
