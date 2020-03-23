@@ -16,8 +16,11 @@ namespace Desarrollo_Compresiones
             //C:\\Users\\roche\\Desktop\\Tea.txt
             //C:\\Users\\roche\\Desktop\\Tony\\Lab1Compresion_\\Compresion\\BIBLIA COMPLETA.txt
             //C:\\Users\\roche\\Desktop\\Tony\\Lab1Compresion_\\Compresion\\BIBLIA COMPLETA.lzw
-            LWZ.Instance.CompresionLZW("C:\\Users\\roche\\Desktop\\Tea.txt");
-            LWZ.Instance.LZWDecompress("C:\\Users\\roche\\Desktop\\Tea.lzw");
+            Console.WriteLine("Drag n' Drop Archivo a comprimir");
+            LWZ.Instance.CompresionLZW(Console.ReadLine());
+            Console.WriteLine("Drag n' Drop Archivo a decomprimir");
+            
+            LWZ.Instance.DescompresionLZW(Console.ReadLine());
             
             //LWZ.Instance.CompresionLZW("C:\\Users\\roche\\Desktop\\BackUpLZW.txt");
             //LWZ.Instance.LZWDecompress("C:\\Users\\roche\\Desktop\\BackUpLZW.lzw");

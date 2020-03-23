@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Hosting;
 using API.Models;
+using API.Data;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using API.Data;
@@ -31,21 +32,20 @@ namespace API.Controllers
 "Bajaré visual 19 para trabajar a partir de alli los demas labs                     "+
 "Disculpe la molestia";
         }
-        [HttpPost("CompresionHuffman")]
-        public async Task<IActionResult> CompresionHuffman([FromBody]object file)
+        [HttpPost("Compresion/{tipo}")]
+        public async Task<IActionResult> CompresionHuffman(IFormFile file, string tipo)
         {
-            var json = JsonConvert.DeserializeObject<Entrada>(file.ToString());
-         
-            ArbolHuffman.Instance.Compresion_Huffman(json.FilePath);
-           
+            var filePath = Path.GetTempFileName();
+            if (file.Length > 0)
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                    await file.CopyToAsync(stream);
+
+            Data.LWZ.Instance.CompresionLZW("");
             return Ok();
         }
         [HttpPost("DesCompresionHuffman")]
-        public async Task<IActionResult> DesCompresionHuffman([FromBody]object file)
+        public async Task<IActionResult> DesCompresionHuffman(IFormFile file)
         {
-
-
-
             var json = JsonConvert.DeserializeObject<Entrada>(file.ToString());
 
             ArbolHuffman.Instance.Descompresio_Huffman(json.FilePath);

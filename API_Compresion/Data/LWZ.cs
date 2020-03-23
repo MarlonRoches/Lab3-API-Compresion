@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Desarrollo_Compresiones
+namespace API_Compresion.Data
 {
     class LWZ
     {
