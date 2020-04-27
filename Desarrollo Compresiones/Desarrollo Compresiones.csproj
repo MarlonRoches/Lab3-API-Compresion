@@ -49,6 +49,7 @@
     <Compile Include="..\API\Models\NodoHuffman.cs">
       <Link>NodoHuffman.cs</Link>
     </Compile>
+    <Compile Include="LWZ.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
